@@ -20,6 +20,7 @@ class AlignmentReport:
     rms_error: float
     tolerance: float
     confidence: float
+    distance_check_max_abs_error: float
     warning: str | None = None
     transformed_entities: int = 0
     unsupported_entities: int = 0
@@ -45,6 +46,7 @@ def build_report(
         rms_error=result.rms,
         tolerance=result.tolerance,
         confidence=result.confidence,
+        distance_check_max_abs_error=result.distance_check_max_abs_error,
         warning=warning,
         transformed_entities=transformed_entities,
         unsupported_entities=unsupported_entities,
@@ -74,6 +76,7 @@ def write_report(report: AlignmentReport, output_dir: str | Path, stem: str) -> 
         f"RMS error: {report.rms_error:.6f}",
         f"Tolleranza: {report.tolerance}",
         f"Confidenza: {report.confidence:.3f}",
+        f"Max errore controllo distanze: {report.distance_check_max_abs_error:.9f}",
         f"Entità trasformate: {report.transformed_entities}",
         f"Entità non supportate: {report.unsupported_entities}",
     ]

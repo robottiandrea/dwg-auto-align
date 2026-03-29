@@ -1,7 +1,7 @@
 """Configurazione centrale dell'MVP."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 import json
 import os
@@ -13,9 +13,13 @@ class AppConfig:
 
     oda_converter_path: str = r"C:\Program Files\ODA\ODAFileConverter\ODAFileConverter.exe"
     matching_tolerance: float = 0.5
-    ransac_max_iterations: int = 2500
+    ransac_max_iterations: int = 3000
     min_confidence: float = 0.55
     low_confidence_warn_only: bool = True
+    # Scale del progetto rispetto al rilievo (vincolo dominio)
+    allowed_project_scale_factors: list[float] = field(default_factory=lambda: [0.5, 2.0, 5.0, 10.0])
+    # Controllo invarianti distanza sui match finali (quasi 0 errore)
+    distance_error_epsilon: float = 1e-6
 
 
 DEFAULT_CONFIG_PATH = Path("config.local.json")

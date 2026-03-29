@@ -51,7 +51,9 @@ set ODA_FILE_CONVERTER=C:\path\to\ODAFileConverter.exe
   "matching_tolerance": 0.5,
   "ransac_max_iterations": 2500,
   "min_confidence": 0.55,
-  "low_confidence_warn_only": true
+  "low_confidence_warn_only": true,
+  "allowed_project_scale_factors": [0.5, 2.0, 5.0, 10.0],
+  "distance_error_epsilon": 1e-6
 }
 ```
 
@@ -92,12 +94,13 @@ Nella cartella output:
 
 1. Conversione interna temporanea DWG->DXF (invisibile all'utente)
 2. Estrazione `POINT` XY da rilievo/progetto
-3. RANSAC su coppie minime (2+2 punti) per ipotesi di similarità
+3. RANSAC guidato da vincoli di scala (progetto rispetto al rilievo: 0.5x, 2x, 5x, 10x)
 4. Valutazione inlier con nearest-neighbor entro tolleranza e vincolo di unicità
 5. Refinement con least squares su inlier
-6. Calcolo RMS e confidenza
-7. Applicazione trasformazione a tutte le entità del DWG progetto
-8. Conversione finale DXF->DWG
+6. Controllo distanze tra inlier: errore assoluto massimo target vicino a 0 (configurabile via `distance_error_epsilon`)
+7. Calcolo RMS e confidenza
+8. Applicazione trasformazione a tutte le entità del DWG progetto
+9. Conversione finale DXF->DWG
 
 ## Modalità demo/validazione
 
@@ -114,7 +117,7 @@ Stampa confronto tra parametri reali e stimati, numero inlier, RMS e confidenza.
 - MVP assume differenze solo di **similarità 2D** (no affine, no deformazioni locali).
 - Dipendenza da ODA File Converter installato e raggiungibile.
 - Entità complesse (es. alcune varianti `DIMENSION`) possono non essere trasformabili da `ezdxf.transform` in tutti i casi: vengono loggate come non supportate.
-- Matching basato su `POINT`; se i `POINT` sono pochi o molto ambigui la confidenza può essere bassa.
+- Matching basato su `POINT`; se i `POINT` sono pochi o molto ambigui può non esistere un modello che rispetti insieme vincoli di scala + controllo distanze quasi-zero.
 
 ## Estensioni future
 

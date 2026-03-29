@@ -57,9 +57,11 @@ def run_alignment(
         dst_points=survey_pts.points_xy,
         tolerance=tolerance,
         max_iterations=cfg.ransac_max_iterations,
+        allowed_project_scale_factors=cfg.allowed_project_scale_factors,
+        distance_error_epsilon=cfg.distance_error_epsilon,
     )
 
-    valid, msg = validate_result(result, cfg.min_confidence)
+    valid, msg = validate_result(result, cfg.min_confidence, cfg.distance_error_epsilon)
     if not valid and not force_save and not cfg.low_confidence_warn_only:
         raise RuntimeError(msg)
 
@@ -104,7 +106,7 @@ def run_demo(noise_sigma: float = 0.03) -> None:
     rng = np.random.default_rng(7)
     survey = rng.uniform(-50, 50, size=(300, 2))
 
-    gt = SimilarityTransform2D(scale=1.145, theta_rad=np.deg2rad(23.5), tx=350.0, ty=-180.0)
+    gt = SimilarityTransform2D(scale=0.2, theta_rad=np.deg2rad(23.5), tx=350.0, ty=-180.0)
     idx = rng.choice(len(survey), size=90, replace=False)
     project_clean = survey[idx]
 
@@ -119,6 +121,8 @@ def run_demo(noise_sigma: float = 0.03) -> None:
         dst_points=survey,
         tolerance=0.35,
         max_iterations=3000,
+        allowed_project_scale_factors=[0.5, 2.0, 5.0, 10.0],
+        distance_error_epsilon=1e-5,
     )
 
     print("=== DEMO ===")
